@@ -36,7 +36,7 @@ html {
   position: absolute;
   /*background: url(mario.png) 95px -3px;*/
   bottom: 10.65%;
-  left: 100px;
+  /*left: 100px;*/
   width: 7vh;
   height: 9.1vh;
   z-index: 15;
