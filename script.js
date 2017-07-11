@@ -5,12 +5,12 @@ var wHeight = $(window).height();
 var halfW = wWidth / 2;
 var value = 0;
 var keys = [];
-var jumpHeight=wWidth/38.28;
+var jumpHeight = wWidth / 38.28;
 var speed = wHeight / 40;
 var time = 10;
 var xPos = 100;
-var YPos = wHeight/1.2429;
-var YPosd = wHeight/1.2429;
+var YPos = wHeight / 1.2429;
+var YPosd = wHeight / 1.2429;
 var JUMP = 38;
 var LEFT = 37;
 var RIGHT = 39;
@@ -33,8 +33,9 @@ $(document).ready(function() {
     function initialize() {
 
       $(window).resize(function() {
-        wHeight = $(window).height();
+
         speed = wHeight / 75;
+
         resizeCanvas();
 
       });
@@ -50,9 +51,7 @@ $(document).ready(function() {
 
     function redrawM(mario) {
       contextm.drawImage(mario, 337, 141, 50, 65, 0, 0, 50, 65);
-      $("#mario").css({
-        top: YPosd
-      });
+
 
     }
 
@@ -81,7 +80,7 @@ $(document).ready(function() {
           var scale = 0.8 / tpg;
           marioC.width = 50;
           marioC.height = 65;
-          //
+
           // contextm.scale(1/scale,1/scale);
           redrawM(mario);
 
@@ -106,8 +105,8 @@ $(document).ready(function() {
     // $(".game").stop();
   });
 
-// setInterval(function(){
-//   ,20);
+  // setInterval(function(){
+  //   ,20);
 
 
 
@@ -115,7 +114,14 @@ $(document).ready(function() {
     // console.log(keys);
     var PosX = $("#mario").offset().left;
     var PosY = $("#mario").offset().top;
-
+    wWidth = $(window).width();
+  wHeight = $(window).height();
+  var blockH = $(".block").offset().top + $(".block").height();
+  if ( blockH >= YPos) {
+    YPos = blockH;
+    gravity = 5;
+    // gravity ++;
+  }
     $("#mario").css({
       x: xPos
     });
@@ -123,10 +129,12 @@ $(document).ready(function() {
     $("#mario").css({
       top: YPos
     });
-var wHeight = $(window).height();
+
     // var mPos = $("#mario").offset().left;
-var rightBack = $("#backG").offset().left + $("#backG").width();
-    $(".info").html("rightBack: "+rightBack+"</br>Xpos: " + xPos + "</br>Ypos: " + YPos + "</br> window height: " + wHeight + "</br> window width: " + wWidth + " </br>half window width: " + halfW + "</br> revert = " + revert + "</br>jump= " + jump);
+    var rightBack = $("#backG").offset().left + $("#backG").width();
+    // $(".info").html("rightBack: " + rightBack + "</br>Xpos: " + xPos + "</br>Ypos: " + YPos + "</br> window height: " + wHeight + "</br> window width: " + wWidth + " </br>half window width: " + halfW + "</br> revert = " + revert + "</br>jump= " + jump);
+
+$(".info").html("PosY: " + PosY + "</br>blockH: " + blockH);
 
 
 
@@ -134,7 +142,7 @@ var rightBack = $("#backG").offset().left + $("#backG").width();
     if (keys[LEFT] && PosX > 29) {
 
 
-    xPos -= speed;
+      xPos -= speed;
 
       if (revert == false) {
         $("#mario").css({
@@ -154,15 +162,15 @@ var rightBack = $("#backG").offset().left + $("#backG").width();
         });
         revert = false;
       }
-      if (xPos + $("#mario").width() >= halfW && wWidth < rightBack -15   ) {
+      if (xPos + $("#mario").width() >= wWidth/2 && wWidth < rightBack - 15) {
 
 
-        $("#backG").css({
+        $(".back").css({
           x: "-=" + speed
         });
 
-      } else if(xPos + 7+ $("#mario").width() < wWidth) {
-    xPos += speed;
+      } else if (xPos + 7 + $("#mario").width() < wWidth) {
+        xPos += speed;
 
       }
     }
@@ -170,27 +178,27 @@ var rightBack = $("#backG").offset().left + $("#backG").width();
 
 
     if (keys[JUMP] && jump == false) {
-gravity=0;
+      gravity = 0;
       // jumpPos =
       jump = true;
       wHeight = $(window).height();
-jumpHeight=wHeight/38.28;
-  YPos -= jumpHeight;
-gravity = -jumpHeight;
+      jumpHeight = wHeight / 38.28;
+      YPos -= jumpHeight;
+      gravity = -jumpHeight;
 
       // setTimeout(function(){jump=false;}, 500);
-// gravity = 0;
+      // gravity = 0;
 
     }
 
-      if (jump == true){
-        YPos += gravity;
-gravity++;
-if(YPos >= YPosd){
-  jump=false;
-YPos = YPosd;
-}
+    if (jump == true) {
+      YPos += gravity;
+      gravity++;
+      if (YPos >= YPosd) {
+        jump = false;
+        YPos = YPosd;
       }
+    }
 
 
 

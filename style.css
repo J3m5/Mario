@@ -12,6 +12,15 @@
   top:0;
 }
 
+.block {
+  position: absolute;
+  left:1097px;
+  top: 582px;
+  background-color: black;
+  z-index: 100;
+  width: 67px;
+  height: 67px;
+}
 /*#mario{
   left: 0;
   top:0;
