@@ -5,17 +5,18 @@ var wHeight = $(window).height();
 var halfW = wWidth / 2;
 var value = 0;
 var keys = [];
-var jumpHeight = wWidth / 38.28;
-var speed = wHeight / 40;
+var jumpHeight = Math.round(wHeight / 38.28);
+var speed = 3;
 var time = 10;
-var xPos = 100;
-var YPos = wHeight / 1.2429;
-var YPosd = wHeight / 1.2429;
+var XPos = 100;
+var YPos = Math.round(wHeight / 1.2429);
+var YPosd = Math.round( wHeight / 1.2429);
 var JUMP = 38;
 var LEFT = 37;
 var RIGHT = 39;
 var DOWN = 40;
 var gravity = 0;
+var beonsurface = true;
 
 $(document).ready(function() {
 
@@ -115,26 +116,14 @@ $(document).ready(function() {
     var PosX = $("#mario").offset().left;
     var PosY = $("#mario").offset().top;
     wWidth = $(window).width();
-  wHeight = $(window).height();
-  var blockH = $(".block").offset().top + $(".block").height();
-  if ( blockH >= YPos) {
-    YPos = blockH;
-    gravity = 5;
-    // gravity ++;
-  }
-    $("#mario").css({
-      x: xPos
-    });
+    wHeight = $(window).height();
 
-    $("#mario").css({
-      top: YPos
-    });
 
     // var mPos = $("#mario").offset().left;
     var rightBack = $("#backG").offset().left + $("#backG").width();
-    // $(".info").html("rightBack: " + rightBack + "</br>Xpos: " + xPos + "</br>Ypos: " + YPos + "</br> window height: " + wHeight + "</br> window width: " + wWidth + " </br>half window width: " + halfW + "</br> revert = " + revert + "</br>jump= " + jump);
+    // $(".info").html("rightBack: " + rightBack + "</br>XPos: " + XPos + "</br>Ypos: " + YPos + "</br> window height: " + wHeight + "</br> window width: " + wWidth + " </br>half window width: " + halfW + "</br> revert = " + revert + "</br>jump= " + jump);
 
-$(".info").html("PosY: " + PosY + "</br>blockH: " + blockH);
+
 
 
 
@@ -142,7 +131,7 @@ $(".info").html("PosY: " + PosY + "</br>blockH: " + blockH);
     if (keys[LEFT] && PosX > 29) {
 
 
-      xPos -= speed;
+      XPos -= speed;
 
       if (revert == false) {
         $("#mario").css({
@@ -155,6 +144,14 @@ $(".info").html("PosY: " + PosY + "</br>blockH: " + blockH);
 
     }
     if (keys[RIGHT]) {
+
+
+      if(speed > Math.round(wHeight / 40)){
+        speed = Math.round(wHeight / 40);
+      }else {
+        speed++;
+      }
+
       if (revert == true) {
         $("#mario").css({
           scale: ("1, 1"),
@@ -162,15 +159,15 @@ $(".info").html("PosY: " + PosY + "</br>blockH: " + blockH);
         });
         revert = false;
       }
-      if (xPos + $("#mario").width() >= wWidth/2 && wWidth < rightBack - 15) {
+      if (XPos + $("#mario").width() >= wWidth / 2 && wWidth < rightBack - 15) {
 
 
         $(".back").css({
           x: "-=" + speed
         });
 
-      } else if (xPos + 7 + $("#mario").width() < wWidth) {
-        xPos += speed;
+      } else if (XPos + 7 + $("#mario").width() < wWidth) {
+        XPos += speed;
 
       }
     }
@@ -182,7 +179,7 @@ $(".info").html("PosY: " + PosY + "</br>blockH: " + blockH);
       // jumpPos =
       jump = true;
       wHeight = $(window).height();
-      jumpHeight = wHeight / 38.28;
+      // jumpHeight = wHeight / 38.28;
       YPos -= jumpHeight;
       gravity = -jumpHeight;
 
@@ -190,19 +187,69 @@ $(".info").html("PosY: " + PosY + "</br>blockH: " + blockH);
       // gravity = 0;
 
     }
+beonsurface = false;
 
-    if (jump == true) {
-      YPos += gravity;
-      gravity++;
-      if (YPos >= YPosd) {
-        jump = false;
-        YPos = YPosd;
-      }
+    var blockH = $(".block").offset().top + $(".block").height();
+    if (
+      YPos > $(".block").offset().top &&
+      YPos < ($(".block").offset().top + $(".block").height()) &&
+      $(".block").offset().left < XPos + $("#mario").width() &&
+      $(".block").offset().left + $(".block").width() > XPos
+
+
+    ) {
+      gravity = 5;
+      YPos = blockH;
+
+      toped = true;
+      // gravity ++;
+    }
+
+    if (YPos + $("#mario").height() > $(".block").offset().top &&
+      XPos + $("#mario").width() >$(".block").offset().left &&
+       XPos < $(".block").offset().left + $(".block").width() &&
+      YPos < $(".block").offset().top &&
+      YPos + $("#mario").height() < ($(".block").offset().top + $(".block").height())
+    ) {
+      YPos = $(".block").offset().top - $("#mario").height();
+
+      jump = false;
+      gravity = 1;
+
+
     }
 
 
 
 
+
+    if (jump == true || !beonsurface) {
+
+      YPos += gravity;
+      gravity++;
+      if (gravity > 40){
+        gravity =40;
+      }
+      beonsurface = false;
+      if (YPos >= YPosd) {
+        jump = false;
+        YPos = YPosd;
+        bOnSurface=true;
+      }
+    }
+if(YPos == YPosd){
+  beonsurface =true;
+}
+
+    $("#mario").css({
+      x: Math.round(XPos)
+    });
+
+    $("#mario").css({
+      top: Math.round(YPos)
+    });
+
+    $(".info").html("Onsurface: "+ beonsurface+"</br>YPos: " + YPos + "</br>blockH: " + blockH + "</br>blockLeft" + $(".block").offset().left + "</br>XPos:" + XPos + "</br>Gravity" + gravity);
 
 
     if (keys[DOWN]) {
