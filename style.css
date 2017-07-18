@@ -27,7 +27,7 @@
 
 .b2 {
   left: 1409px;
-  top: 599px;
+  top: 817px;
   width: 355px;
   height: 68px;
 }
@@ -57,7 +57,7 @@ html {
 #mario {
   position: absolute;
   /*background: url(mario.png) 95px -3px;*/
-  bottom: 10.65%;
+  /*bottom: 10.65%;*/
   /*left: 100px;*/
   /*width: 7vh;
   height: 9.1vh;*/
