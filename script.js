@@ -2,21 +2,32 @@ var revert = false;
 var jump = false;
 var wWidth = $(window).width();
 var wHeight = $(window).height();
+var marioWidth;
+var marioHeight;
 var halfW = wWidth / 2;
 var value = 0;
 var keys = [];
-var jumpHeight = Math.round(wHeight / 38.28);
+var jumpHeight = Math.round(wHeight / 30);
 var speed = 3;
 var time = 10;
 var XPos = 100;
-var YPos = Math.round(wHeight / 1.2429);
-var YPosd = Math.round( wHeight / 1.2429);
+var marioH = 7.092198582/100*wHeight;
+var marioW = marioH/1.296296296;
+var ratio = 1.266;
+var YPos = Math.round(wHeight / ratio) + marioH/2;
+var YPosd = Math.round(wHeight / ratio) + marioH/2;
 var JUMP = 38;
 var LEFT = 37;
 var RIGHT = 39;
 var DOWN = 40;
 var gravity = 0;
 var beonsurface = true;
+var blockH;
+var objects = [];
+var mario = $("#mario");
+var runRight = false;
+var runLeft = false;
+var backMove = false;
 
 $(document).ready(function() {
 
@@ -29,14 +40,19 @@ $(document).ready(function() {
     var marioC = document.querySelector('#mario');
     var contextm = marioC.getContext('2d');
 
-    initialize();
+
 
     function initialize() {
 
       $(window).resize(function() {
 
         speed = wHeight / 75;
-
+        wWidth = $(window).width();
+        wHeight = $(window).height();
+        marioH = 7.092198582/100*wHeight;
+        marioW = marioH/1.296296296;
+        YPos = Math.round(wHeight / ratio) + marioH/2;
+        YPosd = Math.round(wHeight / ratio) + marioH/2;
         resizeCanvas();
 
       });
@@ -50,8 +66,11 @@ $(document).ready(function() {
 
     }
 
-    function redrawM(mario) {
-      contextm.drawImage(mario, 337, 141, 50, 65, 0, 0, 50, 65);
+    function redrawM(marioImg) {
+
+      contextm.drawImage(marioImg, 337, 141, 50, 65, 0, 0, marioW, marioH);
+      marioWidth = $(mario).width();
+      marioHeight = $(mario).height();
 
 
     }
@@ -73,22 +92,21 @@ $(document).ready(function() {
 
         redraw(wCanvas, wHeight, back);
 
-        var mario = new Image();
-        mario.src = 'mario2.png';
-        mario.onload = function() {
+        var marioImg = new Image();
+        marioImg.src = 'mario2.png';
+        marioImg.onload = function() {
           var tp = $(window).height();
           var tpg = tp / 658;
           var scale = 0.8 / tpg;
-          marioC.width = 50;
-          marioC.height = 65;
+          marioC.width = marioW;
+          marioC.height = marioH;
 
-          // contextm.scale(1/scale,1/scale);
-          redrawM(mario);
+          redrawM(marioImg);
 
         };
       };
     }
-
+    initialize();
   })();
 
 
@@ -108,15 +126,26 @@ $(document).ready(function() {
 
   // setInterval(function(){
   //   ,20);
+  $(".block").each(function(i, obj) {
 
+    objects.push(obj);
+  });
 
+  console.log(objects);
+
+  function speedUp() {
+    if (speed >= Math.round(wHeight / 60)) {
+      speed = Math.round(wHeight / 60);
+    } else {
+      speed++;
+    }
+  }
 
   function mainLoop() {
     // console.log(keys);
-    var PosX = $("#mario").offset().left;
-    var PosY = $("#mario").offset().top;
-    wWidth = $(window).width();
-    wHeight = $(window).height();
+    // var PosX = $("#mario").offset().left;
+    // var PosY = $("#mario").offset().top;
+
 
 
     // var mPos = $("#mario").offset().left;
@@ -128,13 +157,15 @@ $(document).ready(function() {
 
 
 
-    if (keys[LEFT] && PosX > 29) {
-
+    if (keys[LEFT] && XPos > 29) {
+      backMove = false;
+      runLeft = true;
+      speedUp();
 
       XPos -= speed;
 
       if (revert == false) {
-        $("#mario").css({
+        $(mario).css({
           scale: ("-1,1"),
           filter: "FlipH"
         });
@@ -145,118 +176,150 @@ $(document).ready(function() {
     }
     if (keys[RIGHT]) {
 
+      runRight = true;
+      speedUp();
 
-      if(speed > Math.round(wHeight / 40)){
-        speed = Math.round(wHeight / 40);
-      }else {
-        speed++;
-      }
 
       if (revert == true) {
-        $("#mario").css({
+        $(mario).css({
           scale: ("1, 1"),
           filter: "none"
         });
         revert = false;
       }
-      if (XPos + $("#mario").width() >= wWidth / 2 && wWidth < rightBack - 15) {
 
+      if ((XPos+150) >= wWidth  / 2 && wWidth + speed <= rightBack) {
+        backMove = true;
 
         $(".back").css({
           x: "-=" + speed
         });
 
-      } else if (XPos + 7 + $("#mario").width() < wWidth) {
+      }
+      if (  XPos <= wWidth / 2 && XPos + marioWidth + speed <= wWidth) {
         XPos += speed;
-
+        backMove = false;
       }
     }
+    console.log(wHeight);
 
+    if (keys[RIGHT] == null && runRight == true && speed > 4 && backMove == true) {
+      if (speed > 1) {
+        speed = speed - 2;
+        $(".back").css({
+          x: "-=" + speed
+        });
+      } else {
+        runRight = false;
+        speed = 3;
+        backMove = false;
+      }
+
+    }
 
 
     if (keys[JUMP] && jump == false) {
       gravity = 0;
-      // jumpPos =
       jump = true;
-      wHeight = $(window).height();
-      // jumpHeight = wHeight / 38.28;
       YPos -= jumpHeight;
       gravity = -jumpHeight;
-
-      // setTimeout(function(){jump=false;}, 500);
-      // gravity = 0;
-
     }
-beonsurface = false;
-
-    var blockH = $(".block").offset().top + $(".block").height();
-    if (
-      YPos > $(".block").offset().top &&
-      YPos < ($(".block").offset().top + $(".block").height()) &&
-      $(".block").offset().left < XPos + $("#mario").width() &&
-      $(".block").offset().left + $(".block").width() > XPos
-
-
-    ) {
-      gravity = 5;
-      YPos = blockH;
-
-      toped = true;
-      // gravity ++;
-    }
-
-    if (YPos + $("#mario").height() > $(".block").offset().top &&
-      XPos + $("#mario").width() >$(".block").offset().left &&
-       XPos < $(".block").offset().left + $(".block").width() &&
-      YPos < $(".block").offset().top &&
-      YPos + $("#mario").height() < ($(".block").offset().top + $(".block").height())
-    ) {
-      YPos = $(".block").offset().top - $("#mario").height();
-
-      jump = false;
-      gravity = 1;
-
-
-    }
-
-
-
-
-
-    if (jump == true || !beonsurface) {
-
-      YPos += gravity;
-      gravity++;
-      if (gravity > 40){
-        gravity =40;
-      }
-      beonsurface = false;
-      if (YPos >= YPosd) {
-        jump = false;
-        YPos = YPosd;
-        bOnSurface=true;
-      }
-    }
-if(YPos == YPosd){
-  beonsurface =true;
-}
-
-    $("#mario").css({
-      x: Math.round(XPos)
-    });
-
-    $("#mario").css({
-      top: Math.round(YPos)
-    });
-
-    $(".info").html("Onsurface: "+ beonsurface+"</br>YPos: " + YPos + "</br>blockH: " + blockH + "</br>blockLeft" + $(".block").offset().left + "</br>XPos:" + XPos + "</br>Gravity" + gravity);
-
 
     if (keys[DOWN]) {
 
-
-
     }
+
+    if ((jump == true || !beonsurface)) {
+
+
+
+      if (keys[JUMP]) {
+        beonsurface = false;
+        YPos += gravity;
+        gravity = gravity + 2;
+        beonsurface = false;
+        if (gravity > 80) {
+          gravity = 80;
+        }
+
+
+
+      } else if (keys[JUMP] == null) {
+        YPos += gravity;
+
+        if (gravity < 0) {
+          gravity = gravity + 6;
+        } else {
+          gravity = gravity + 2;
+        }
+
+      }
+
+      if (YPos >= YPosd) {
+        jump = false;
+        YPos = YPosd;
+        bOnSurface = true;
+      }
+    }
+
+    if (gravity > 60) {
+      gravity = 60;
+    }
+    beonsurface = false;
+
+
+    $.each(objects, function(i, obj) {
+
+      var objTop = $(obj).offset().top;
+      var objHeight = $(obj).height();
+      var objLeft = $(obj).offset().left;
+      var objBottom = objTop + objHeight;
+      var objWidth = $(obj).width();
+
+      // Detecte si mario tombe sur un objet.
+
+      if (YPos + marioHeight > objTop &&
+        XPos + marioWidth > objLeft &&
+        XPos < objLeft + objWidth &&
+        YPos < objTop &&
+        YPos + marioHeight < (objTop + objHeight)
+      ) {
+        YPos = objTop - marioHeight;
+        jump = false;
+        gravity = 1;
+      }
+      //Detecte si mario touche un object avec sa tete en sautant.
+      else if (
+        YPos > objTop &&
+        YPos <= objBottom &&
+        XPos + marioWidth > objLeft &&
+        XPos < objLeft + objWidth
+      ) {
+        gravity = 5;
+        YPos = objBottom;
+
+        toped = true;
+        // gravity ++;
+      }
+
+
+    });
+
+
+
+
+
+    $(mario).css({
+      x: XPos
+    });
+
+    $(mario).css({
+      top: YPos
+    });
+
+    $(".info").html("Onsurface: " + beonsurface + "</br>YPos: " + YPos + "</br>blockH: " + blockH + "</br>blockLeft" + $(".block").offset().left + "</br>XPos:" + XPos + "</br>Gravity" + gravity);
+
+
 
     requestAnimationFrame(mainLoop);
   }
