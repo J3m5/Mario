@@ -80,7 +80,7 @@ $(document).ready(function() {
 
 
             var back = new Image();
-            back.src = 'https://github.com/J3m5/Mario/blob/master/SMBw112.png';
+            back.src = 'SMBw112.png';
             back.onload = function() {
 
                 var iw = back.width;
@@ -94,7 +94,7 @@ $(document).ready(function() {
                 redraw(wCanvas, wHeight, back);
 
                 var marioImg = new Image();
-                marioImg.src = 'https://github.com/J3m5/Mario/blob/master/mario2.png';
+                marioImg.src = 'mario2.png';
                 marioImg.onload = function() {
                     var tp = $(window).height();
                     var tpg = tp / 658;
